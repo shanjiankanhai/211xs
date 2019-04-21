@@ -1,0 +1,217 @@
+{extend name="$LAYOUT_MOBILE_BASE" /}
+{block name="title"}会话页 - {__block__}{/block}
+{block name="css"}
+<link rel="stylesheet" href="__ROOT__/addons/wstim/view/mobile/shopchats/chat_list.css?v={$v}">
+<link rel="stylesheet" href="__ROOT__/addons/wstim/view/mobile/shopchats/app.css?v={$v}">
+<link rel="stylesheet" type="text/css" href="__STATIC__/plugins/webuploader/webuploader.css?v={$v}" />
+{/block}
+{block name="header"}
+    <header style="background:#EB3019;" class="ui-header ui-header-positive ui-border-b wst-header">
+        <i class="ui-icon-return" onclick="history.back()"></i><h1>聊天</h1>
+    </header>
+{/block}
+{block name="footer"}
+	<div class="ui-loading-wrap wst-Load" id="Load">
+	    <i class="ui-loading"></i>
+	</div>
+{/block}
+{block name="main"}
+<input type="hidden" id="loginName" value="{$loginName}" />
+    {/* 用户最近对话列表 */}
+    <script id="userUnReadList" type="text/html">
+      {{# for(var i=0;i<d.length;++i){  }}
+        <li class="cl_li" id="shopId_{{d[i].shopId}}" onclick="javascript:dataShow(this,'{{d[i].shopName}}',{{d[i].shopId}},0);">
+          <a 
+            href="#">
+            <div class="cl_imgbox">
+              <img 
+                  class="shopImg" 
+                  src="__RESOURCE_PATH__/{:WSTConf('CONF.shopLogo')}"
+                  data-echo="__RESOURCE_PATH__/{{d[i].shopImg}}" alt="" />
+
+                <span class="un_read" 
+                {{# if(d[i].unReadNum==0){  }}
+                style="display:none;"
+                {{# }  }}
+                  >{{d[i].unReadNum}}</span>
+              
+            </div>
+            <div class="cl_infobox">
+              <p class="cl_sname">
+                <span class="user_name">{{d[i].shopName}}</span>
+                <span class='fr last_time'>{{d[i].createTime}}</span>
+              </p>
+              <p class="cl_desc">{{d[i].content.content}}</p>
+            </div>
+            <div class="wst-clear"></div>
+          </a>
+        </li>
+      {{# } }}
+      
+    </script>
+
+    <section class="ui-container">
+      <!-- <ul class="sc_head">
+        <li class="fl"><a class="sch_item curr">用户版(<span id="userUnReadNum">0</span>)</a></li>
+        <li class="fl"><a class="sch_item">客服版(<span id="serviceUnReadNum">0</span>)</a></li>
+        <div class="wst-clear"></div>
+      </ul> -->
+      <div class="sys_msg">
+        <a 
+          href="{:url('mobile/messages/index')}">
+          <div class="cl_imgbox">
+            <img 
+                class="shopImg"
+                src="__RESOURCE_PATH__/{:WSTConf('CONF.mallLogo')}" />
+              {if($sysMsg['count']>0)}
+                <span class="un_read">{$sysMsg['count']}</span>
+              {/if}
+          </div>
+          <div class="cl_infobox">
+            <p class="cl_sname">
+              <span class="user_name">系统消息</span>
+              <span class='fr last_time'>{$sysMsg['createTime']}</span>
+            </p>
+            <p class="cl_desc">{$sysMsg['msgContent']?:'[暂无消息]'}</p>
+          </div>
+          <div class="wst-clear"></div>
+        </a>
+      </div>
+      <ul class="cl_ul">
+      </ul>
+      <div id="empty" class="wst-prompt-info">
+        <p style="font-size:16px">暂无会话</p>
+      </div>
+
+
+    </section>
+
+
+    {/* 遮盖层  */}
+    <div class="wst-cover" id="cover"></div>
+    {/* 对话层  */}
+    <div class="wst-fr-box" id="frame">
+        <div class="title" id="boxTitle">
+          <span>用户名 or 店铺名</span>
+          <i class="ui-icon-close-page" onclick="javascript:dataHide();"></i>
+          <div class="wst-clear"></div>
+        </div>
+        <div class="content" id="content">
+            <div class="main">
+              <div id="J_Wrapper" class="im-chat-window">
+                  <div id="J_ScrollDiv" class="scroll-div" style="transform: translate(0px, 0px) translateZ(0px);">
+                      <div class="pull-down" id="J_PullDown">
+                          <span class="pull-down-icon"></span>
+                          <span class="pull-down-label">加载中...</span>
+                      </div>
+                      <ul class="im-chat-list im-chat-pb" id="J_ImChatList">
+                      </ul>
+                  </div>
+              </div>
+              <!--footer-->
+              <footer id="J_Toolbar">
+                  <!--自助表单-->
+                  <div class="J_FastLinkWrap">
+                  </div>
+                  <!-- <div class="J_ImKey im-key im-key-close"> -->
+                  <div class="J_ImKey im-key im-key-open">
+                      <!-- <span class="cell01" style="width: 355px;"> -->
+                      <span class="cell01" style="width: 89%;">
+                          <input onblur="javascript:document.body.scrollTop=0;" maxlength="360" placeholder="请输入您要咨询的问题" class="text-in" id="J_TextIn" type="text" autocomplete="off" style="width: 335px;">
+                      </span>
+                      <span class="cell02">
+                          <a class="btn-link" onclick="sendMsg()" id="J_SendToggle" href="javascript:void(0);"></a>
+                      </span>
+                  </div>
+                  <div class="tool-main">
+                      <ul class="J_ToolNav tool-nav">
+                          <!-- <li>
+                              <a href="javascript:void(0);" data-rel="J_Estimate" class="btn-estimate"><span>评价</span></a>
+                          </li> -->
+                          <li class="">
+                              <a href="javascript:void(0);" id="J_Photo" class="J_Photo btn-photo"><span>上传</span>
+                                  
+                              </a>
+                          </li>
+                          <li class="">
+                              <a href="javascript:void(0);" id="J_Order" class="btn-order"><span>我的订单</span></a>
+                          </li>
+                          <li class="">
+                              <a href="javascript:void(0);" id="J_Recent" class="btn-recent"><span>最近浏览</span></a>
+                          </li>
+                          <!-- <li>
+                              <a href="javascript:void(0);" data-rel="J_Emoji" class="J_Emoji btn-smile"><span>表情</span></a>
+                          </li> -->
+                      </ul>
+                  </div>
+              </footer>
+              <div class="loading-instance" id="Global_Loading" style="display: none;">
+                  <p class="loading-img">
+                  <i></i>
+                      当前店铺客服接待人数过多，您目前处于排队状态... 
+                  </p>
+                   <a class="wait_btn" href="#">不排队了，我要留言</a>
+              </div>
+            
+              <div class="im-list-pop has-mask" id="Im_PopUp" style="display: none;">
+                    <div class="im-list-sub"><div class="im-pop-close"><a href="javascript:;"></a></div>
+                        <div class="im-box-pop" id="Im_test" style="max-height: 500px;">
+                            <div class="im-box-title">请选择您要咨询的商品</div>
+                            <div class="im-scroll-pop" id="J_ImScrollPop" style="max-height: 336px; height: 307px;">
+                                <div class="im-scroll-cont" style="transform: translate(0px, 0px) translateZ(0px);">
+                                    <div class="im-order">
+                                        <div class="pull-Up"><span class="pull-icon"></span><span class="pull-label"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+             </div>
+          </div>
+        </div>
+    </div>
+
+
+<input type="hidden" value="{$shopId}" id="shopId">
+<input type="hidden" value="{$userId}" id="receiveId">
+<input type="hidden" value="{:session('WST_USER.userId')}" id="userId">
+<input type="hidden" value="自营店铺" id="shopName">
+<input type="hidden" value="1" id="currPage">
+<input type="hidden" value="1" id="totalPage">
+<input type="hidden" value="0" id="currOrderPage">
+<input type="hidden" value="1" id="totalOrderPage">
+
+<img 
+  id="serviceImg"
+  style="display: none"
+  src="__RESOURCE_PATH__/{:WSTConf('CONF.shopLogo')}"
+  data-echo="__RESOURCE_PATH__/{:session('WST_USER.shopImg')}" alt="" />
+<img 
+    id="userPhoto"
+    style="display: none;"
+    src="__RESOURCE_PATH__/{:WSTConf('CONF.userLogo')}"
+    data-echo="{:WSTUserPhoto(session('WST_USER.userPhoto'))}" alt="" />
+
+
+
+{php}
+  $workerName = empty(session('WST_USER.userName'))?session('WST_USER.loginName'):session('WST_USER.userName');
+{/php}
+
+
+{/block}
+{block name="include"}
+{include file="$LAYOUT_MOBILE_DIALOG" /}
+{/block}
+{block name="js"}
+<script>
+  var server = "{$server}";
+  var sendId = "{$userId}";
+  var shopId = "{$shopId}";
+  var loginName = "{$loginName}";
+      workerName = "{$workerName}";
+</script>
+<script type="text/javascript" src="__STATIC__/js/jquery.min.js?v={$v}"></script>
+<script type='text/javascript' src='__STATIC__/plugins/webuploader/webuploader.js?v={$v}'></script>
+<script type='text/javascript' src='__ROOT__/addons/wstim/view/mobile/shopchats/chat_list.js?v={$v}'></script>
+{/block}

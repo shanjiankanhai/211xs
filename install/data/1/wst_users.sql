@@ -1,0 +1,51 @@
+SET FOREIGN_KEY_CHECKS=0;
+
+DROP TABLE IF EXISTS `wst_users`;
+CREATE TABLE `wst_users` (
+  `userId` int(11) NOT NULL AUTO_INCREMENT,
+  `loginName` varchar(20) NOT NULL,
+  `loginSecret` int(11) NOT NULL,
+  `loginPwd` varchar(50) NOT NULL,
+  `userType` tinyint(4) NOT NULL DEFAULT '0',
+  `userSex` tinyint(4) DEFAULT '0',
+  `userName` varchar(100) DEFAULT NULL,
+  `trueName` varchar(100) DEFAULT NULL,
+  `brithday` date DEFAULT NULL,
+  `userPhoto` varchar(200) DEFAULT NULL,
+  `userQQ` varchar(20) DEFAULT NULL,
+  `userPhone` char(11) DEFAULT '',
+  `userEmail` varchar(50) DEFAULT '',
+  `userScore` int(11) DEFAULT '0',
+  `userTotalScore` int(11) DEFAULT '0',
+  `lastIP` varchar(16) DEFAULT NULL,
+  `lastTime` datetime DEFAULT NULL,
+  `userFrom` tinyint(4) DEFAULT '0',
+  `userMoney` decimal(11,2) DEFAULT '0.00',
+  `lockMoney` decimal(11,2) DEFAULT '0.00',
+  `userStatus` tinyint(4) NOT NULL DEFAULT '1',
+  `dataFlag` tinyint(4) NOT NULL DEFAULT '1',
+  `createTime` datetime NOT NULL,
+  `payPwd` varchar(100) DEFAULT NULL,
+  `rechargeMoney` decimal(11,2) DEFAULT '0.00' COMMENT '充值金额',
+  `isInform` tinyint(4) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`userId`),
+  KEY `userStatus` (`userStatus`,`dataFlag`),
+  KEY `loginName` (`loginName`),
+  KEY `userPhone` (`userPhone`),
+  KEY `userEmail` (`userEmail`),
+  KEY `userType` (`userType`,`dataFlag`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `wst_users` VALUES ('1', 'wstmart', '5937', '022a8dfc57d286de1e221a21dedad94b', '1', '0', null, null, null, '', null, '', '', '0', '0', '::1', '2019-02-23 15:45:33', '0', '0.00', '0.00', '1', '1', '2016-10-08 10:27:28', null, '0.00', '1'),
+('2', 'shuiguo', '5443', 'd83f4da38aa6132f300e20cfc3d50677', '1', '0', null, null, null, null, null, '', '', '0', '0', '::1', '2019-02-22 23:23:49', '0', '0.00', '0.00', '1', '1', '2019-02-22 17:37:48', null, '0.00', '1'),
+('3', 'huawei', '8970', '1ecc796d3bebd976e27819c6f6e78aca', '1', '0', null, null, null, null, null, '', '', '0', '0', '::1', '2019-02-23 10:28:33', '0', '0.00', '0.00', '1', '1', '2019-02-22 17:46:24', null, '0.00', '1'),
+('4', 'xiaomi', '3330', 'ad48387b0411c8cf91b89eed0e965d45', '1', '0', null, null, null, null, null, '', '', '0', '0', null, null, '0', '0.00', '0.00', '1', '1', '2019-02-22 17:48:42', null, '0.00', '1'),
+('5', 'apple', '8064', '9b6c30e3a0298a311a1ce48bbc64bb52', '1', '0', null, null, null, null, null, '', '', '0', '0', '::1', '2019-02-23 11:07:06', '0', '0.00', '0.00', '1', '1', '2019-02-22 17:54:23', null, '0.00', '1'),
+('6', 'oppozy', '2334', 'b9648290e6eca5ea2036ba3512c2cc85', '1', '0', null, null, null, null, null, '', '', '0', '0', null, null, '0', '0.00', '0.00', '1', '1', '2019-02-22 17:59:15', null, '0.00', '1'),
+('7', 'sanzhisongshu', '8921', 'e12f2284982cb6e99fd2212de2f4ebd4', '1', '0', null, null, null, null, null, '', '', '0', '0', '::1', '2019-02-22 23:41:35', '0', '0.00', '0.00', '1', '1', '2019-02-22 18:15:46', null, '0.00', '1'),
+('8', 'liangpin', '5713', '770fd0253375127f24d9cddea362b16a', '1', '0', null, null, null, null, null, '', '', '0', '0', null, null, '0', '0.00', '0.00', '1', '1', '2019-02-22 18:24:59', null, '0.00', '1'),
+('9', 'lejuriyong', '3997', '1c00c6fee2b55278ec73cca05ecbc419', '1', '0', null, null, null, null, null, '', '', '0', '0', null, null, '0', '0.00', '0.00', '1', '1', '2019-02-22 18:30:58', null, '0.00', '1'),
+('10', 'tongrentang', '8669', 'b387dd2cdbc2412163a246db0e631fcd', '1', '0', null, null, null, null, null, '', '', '0', '0', '::1', '2019-02-23 00:17:04', '0', '0.00', '0.00', '1', '1', '2019-02-22 18:36:19', null, '0.00', '1'),
+('11', 'jiameijia', '1514', 'f18d0a1085d141e1e93bd759f0597ceb', '1', '0', null, null, null, null, null, '', '', '0', '0', '::1', '2019-02-23 11:28:43', '0', '0.00', '0.00', '1', '1', '2019-02-22 18:48:16', null, '0.00', '1'),
+('12', 'huaguoshan', '5493', '7cc0e67d02224815b4d0589edd65eaba', '1', '0', null, null, null, null, null, '', '', '0', '0', '::1', '2019-02-23 15:45:43', '0', '0.00', '0.00', '1', '1', '2019-02-22 19:19:45', null, '0.00', '1');

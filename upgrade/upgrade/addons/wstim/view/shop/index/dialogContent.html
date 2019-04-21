@@ -1,0 +1,37 @@
+<style>
+   body{background-color:#f1f1f1;}
+   .send_box{color:#fff!important}
+   .layui-layer-setwin .layui-layer-close1{color:#fff!important;}
+   .tc{text-align: center;}
+   .dialog_content_box{background-color: #fff; margin: 0px auto; padding-top: 10px;height: 100%; }
+   .dialog_content_titbox{padding:0 10px; box-sizing: border-box; }
+   .dialog_content_tit{background-color: rgb(226, 62, 61); width: 100%; text-align: center; color: #fff; padding: 5px; font-size: 18px; }
+   .dialog_content_item:before{display: table; content: " ";}
+   .dialog_content_item:after{display: table; content: " "; clear:both;}
+   .reply_box{float: left; margin: 10px; padding: 10px; border-radius: 10px; background-color: #f1f1f1; }
+   .send_box{float: right; margin: 10px; padding: 10px; border-radius: 10px; background-color: rgb(226, 62, 61); }
+   .reply_name{}
+   .dcr_content,.dcs_content{margin: 5px 0; color: #333; }
+   .dcs_send{color: #fff}
+   .msg_reply_time{color:#a3afb7;}
+   .msg_send_time{color:#e5e5e5;}
+</style>
+<div class="dialog_content_box">
+   <div class="dialog_content_titbox">
+     <!--  <div class="dialog_content_tit">会话详情({$loginName})</div> -->
+   </div>
+   <div class="" id="scrollDiv">
+      <div class="chat-more" id="clickMore" onclick="clickMore(this)">
+         <p class="tc"><span class="icon"></span><span class="txt">点击加载更多</span></p>
+      </div>
+   </div>
+</div>
+<input type="hidden" id="userId" value="{$userId}" />
+<input type="hidden" id="currPage" value="0" />
+<input type="hidden" id="totalPage" value="1" />
+<script src="__ROOT__/addons/wstim/view/shop/index/dialogcontents.js?v={$v}" type="text/javascript"></script>
+<script>
+$(function(){
+   clickMore($('#clickMore'))
+})
+</script>

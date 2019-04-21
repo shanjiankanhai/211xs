@@ -1,0 +1,84 @@
+{extend name="$LAYOUT_WECHAT_BASE" /}
+{block name="title"}我的消息 - {__block__}{/block}
+{block name="css"}
+<link rel="stylesheet"  href="__ROOT__/addons/wstim/view/wechat/chats/chat_list.css?v={$v}">
+{/block}
+{block name="header"}
+    <header style="background:#ffffff;" class="ui-header ui-header-positive ui-border-b wst-header">
+        <i class="ui-icon-return" onclick="WST.goBack()"></i><h1>会话列表</h1>
+    </header>
+{/block}
+{block name="footer"}
+	<div class="ui-loading-wrap wst-Load" id="Load">
+	    <i class="ui-loading"></i>
+	</div>
+{/block}
+{block name="main"}
+    <section class="ui-container">
+      <div class="sys_msg">
+        <a 
+          href="{:url('wechat/messages/index')}">
+          <div class="cl_imgbox">
+            <img 
+                class="shopImg"
+                src="__RESOURCE_PATH__/{:WSTConf('CONF.mallLogo')}" />
+              {if($sysMsg['count']>0)}
+                <span class="un_read">{$sysMsg['count']}</span>
+              {/if}
+          </div>
+          <div class="cl_infobox">
+            <p class="cl_sname">
+              <span>系统消息</span>
+              <span class='fr c12_999'>{$sysMsg['createTime']}</span>
+            </p>
+            <p class="cl_desc c12_999">{$sysMsg['msgContent']?:'[暂无消息]'}</p>
+          </div>
+          <div class="wst-clear"></div>
+        </a>
+      </div>
+      {if(!empty($chatlists))}
+      <ul class="cl_ul">
+        {volist name="$chatlists" id="chat"}
+        <li class="cl_li">
+          <a href="{:url('addon/wstim-chats-wxindex',['shopId'=>$chat['shopId']])}">
+
+            <div class="cl_imgbox">
+              <img 
+                  src="__RESOURCE_PATH__/{:WSTConf('CONF.shopLogo')}"
+                  data-echo="__RESOURCE_PATH__/{$chat['shopImg']}" alt="" />
+              {if($chat['unReadNum']>0)}
+                <span class="un_read">{$chat['unReadNum']}</span>
+              {/if}
+            </div>
+            <div class="cl_infobox">
+              <p class="cl_sname">
+                <span>{$chat['shopName']}</span>
+                <span class='fr c12_999'>{$chat['createTime']}</span>
+              </p>
+              <p class="cl_desc c12_999">{$chat['content']['content']}</p>
+            </div>
+            <div class="wst-clear"></div>
+          </a>
+        </li>
+        {/volist}
+      </ul>
+      {else /}
+          <div class="wst-prompt-info">
+            <p style="font-size:16px">暂无会话记录</p>
+          </div>
+      {/if}
+
+    </section>
+{/block}
+{block name="include"}
+{include file="$LAYOUT_WECHAT_DIALOG" /}<!-- 对话框模板 -->
+{/block}
+{block name="js"}
+<script>
+$(function(){
+  $('img.shopImg').error(function(){
+    $(this).attr('src',WST.conf.RESOURCE_PATH+'/'+WST.conf.SHOP_LOGO);
+  });
+})
+</script>
+{/block}

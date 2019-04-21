@@ -1,0 +1,90 @@
+{php}
+	$url = url('/addon/wstim-chats-wxChatlist');
+	$isService = (bool)session('WST_USER.isService');
+	if($isService)$url = url('/addon/wstim-shopchats-wxChatlist');
+	$server = WSTConf('CONF.chatServer');
+	$userId = session('WST_USER.userId');
+	$loginName = session('WST_USER.loginName');
+	$shopId = (int)session('WST_USER.shopId');
+{/php}
+<style>
+.wst-menus .chatList {background: url(__ROOT__/addons/wstim/view/wechat/img/icon_bottomnav.png) -178px 5px no-repeat; background-size: 742%; }
+.wst-menus .unReadNum {display: none; position: absolute; width: 17px; height: 17px; background:#de0202; color: #fff; border-radius: 50%; font-size: 0.11rem; text-align: center; line-height: 18px; right: 5px; top: 1px;}
+.chat-word {float: left; width: 100%; text-align: center; font-size: 0.12rem; color: #2c2c2c; height: 16px; line-height: 16px; }
+.J_followbox{display: none}
+#chatListBox{position: relative;}
+</style>
+<div class="ui-col ui-col">
+	<a onclick="chatList()">
+		<p id="chatListBox">
+			<span id="botUnRead" class="unReadNum">0</span>
+		</p>
+	</a>
+</div>
+<script>
+    var url = "{$url}";
+    function chatList(){
+        if(WST.conf.IS_LOGIN==0){
+            WST.inLogin(url);
+            return;
+        }
+        window.location.href= url;
+    }
+	$('#chatListBox').append('<span class="icon chatList"></span><span class="chat-word">消息</span>');
+</script>
+{if($userId>0)}
+<script>
+var _connectInfo = {
+	userId:"{$userId}",
+	loginName:"{$loginName}",
+	shopId:"{$shopId}",
+	isService:"{$isService}"
+}
+$(function(){
+        var _protocol = (window.location.protocol.indexOf('https')!=-1)?'wss://':'ws://';
+	    var _gws = new WebSocket(_protocol+'{$server}');
+        // 连接服务器
+        _gws.onopen = function(){
+            var sendData = {
+                            uid:_connectInfo.userId,// 用户id
+                            userName:_connectInfo.loginName,// 用户名
+                            role:'lisenter',// 角色
+                            shopId:_connectInfo.shopId// 所属店铺id
+                            };
+            _gws.send(JSON.stringify(sendData));
+            // 若为客服身份，则执行客服登录
+            if(_connectInfo.shopId>0 && _connectInfo.isService){
+                 // 角色
+                 sendData.role='worker';
+                 sendData.type='login';
+                _gws.send(JSON.stringify(sendData));
+            }
+        }
+        _gws.onmessage = function(e){
+            let _data = JSON.parse(e.data);
+            switch(_data.type){
+                case 'newMsg':
+                	var _obj = $('#botUnRead');
+                    var _curr = _obj.html();
+                    	_obj.show().html(++_curr);
+                break;
+                case 'unReadMsgNum':
+                    var totalNum = _data.userUnRead+_data.serviceUnRead;
+                    var _obj = $('#botUnRead');
+                    (totalNum>0)?_obj.show().html(totalNum):_obj.hide();
+
+                break;
+            }
+        };
+        _gws.onclose = function(evt)
+        {
+          console.log('WebSocketClosed!~utils');
+        }
+        _gws.onerror = function(evt)
+        {
+          console.log('WebSocketError!~utils');
+        }
+
+});
+</script>
+{/if}

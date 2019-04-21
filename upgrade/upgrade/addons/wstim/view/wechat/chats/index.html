@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>我的客服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="__WECHAT__/frozenui/css/frozen.css">
+    <link rel="stylesheet"  href="__ROOT__/addons/wstim/view/wechat/chats/app.css?v={$v}">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/plugins/webuploader/webuploader.css?v={$v}" />
+
+
+    <script type="text/javascript" src="__STATIC__/js/jquery.min.js?v={$v}"></script>
+    <script src="__WECHAT__/js/echo.min.js"></script>
+    <script type='text/javascript' src='__WECHAT__/js/common.js?v={$v}'></script>
+    <script type='text/javascript' src='__ROOT__/addons/wstim/view/wechat/chats/index.js?v={$v}'></script>
+    <script type='text/javascript' src='__STATIC__/plugins/webuploader/webuploader.js?v={$v}'></script>
+    <script>
+    window.conf = {"ROOT":"__ROOT__","WECHAT":"__WECHAT__","APP":"__APP__","STATIC":"__STATIC__","SUFFIX":"{:config('url_html_suffix')}","MALL_LOGO":"{:WSTConf('CONF.mallLogo')}","GOODS_LOGO":"{:WSTConf('CONF.goodsLogo')}","SHOP_LOGO":"{:WSTConf('CONF.shopLogo')}","USER_LOGO":"{:WSTConf('CONF.userLogo')}","ROUTES":'{:WSTRoute()}','RESOURCE_PATH':'{:WSTConf('CONF.resourcePath')}'}
+    </script>
+</head>
+<body class="noHeader">
+<div class="main">
+    <!-- 客服信息 -->
+    <div class="top-info top-sname" id="J_CustomServiceInfo">
+        <a class="back_icon" href="javascript:void(0)" onclick="WST.goBack()">
+            <i class="ui-icon-return"></i>
+        </a>
+        <div class="J_WaiterBody inner on" style="height:40px;">
+            <div class="h_center" >
+                <img 
+                    id="shopImg"
+                    class="J_WaiterHead offline" 
+                    src="__RESOURCE_PATH__/{:WSTConf('CONF.shopLogo')}"
+                    data-echo="__RESOURCE_PATH__/{$shopImg}" alt="" />
+                <div class="fl">
+                    <p class="name">
+                        <span class="J_WaiterName">{$shopName}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+         <a href="{:url('wechat/shops/index',['shopId'=>$shopId])}" class="entry_shop">进店</a>
+    </div>
+    <div id="J_Wrapper" class="im-chat-window">
+        <div id="J_ScrollDiv" class="scroll-div" style="transform: translate(0px, 0px) translateZ(0px);">
+            <div class="pull-down" id="J_PullDown">
+                <span class="pull-down-icon"></span>
+                <span class="pull-down-label">加载中...</span>
+            </div>
+            <ul class="im-chat-list im-chat-pb" id="J_ImChatList">
+                
+            </ul>
+        </div>
+    </div>
+    <!--footer-->
+    <footer id="J_Toolbar">
+        <!--自助表单-->
+        <div class="J_FastLinkWrap">
+        </div>
+        <!-- <div class="J_ImKey im-key im-key-close"> -->
+        <div class="J_ImKey im-key im-key-open">
+            <!-- <span class="cell01" style="width: 355px;"> -->
+            <span class="cell01" style="width: 89%;">
+                <input maxlength="360" placeholder="请输入您要咨询的问题" class="text-in" id="J_TextIn" type="text" autocomplete="off" style="width: 335px;">
+            </span>
+            <span class="cell02">
+                <a class="btn-link" onclick="sendMsg()" id="J_SendToggle" href="javascript:void(0);"></a>
+            </span>
+        </div>
+        <div class="tool-main">
+            <ul class="J_ToolNav tool-nav">
+                <!-- <li>
+                    <a href="javascript:void(0);" data-rel="J_Estimate" class="btn-estimate"><span>评价</span></a>
+                </li> -->
+                <li class="">
+                    <a href="javascript:void(0);" id="J_Photo" class="J_Photo btn-photo"><span>上传</span>
+                        
+                    </a>
+                </li>
+                <li class="">
+                    <a href="javascript:void(0);" id="J_Order" class="btn-order"><span>我的订单</span></a>
+                </li>
+                <li class="">
+                    <a href="javascript:void(0);" id="J_Recent" class="btn-recent"><span>最近浏览</span></a>
+                </li>
+                <!-- <li>
+                    <a href="javascript:void(0);" data-rel="J_Emoji" class="J_Emoji btn-smile"><span>表情</span></a>
+                </li> -->
+            </ul>
+        </div>
+    </footer>
+    <div class="loading-instance" id="Global_Loading" style="display: none;">
+        <p class="loading-img">
+        <i></i>
+            当前店铺客服接待人数过多，您目前处于排队状态... 
+        </p>
+         <a class="wait_btn" href="#">不排队了，我要留言</a>
+    </div>
+  
+  <div class="im-list-pop has-mask" id="Im_PopUp" style="display: none;">
+        <div class="im-list-sub"><div class="im-pop-close"><a href="javascript:;"></a></div>
+            <div class="im-box-pop" id="Im_test" style="max-height: 500px;">
+                <div class="im-box-title">请选择您要咨询的商品</div>
+                <div class="im-scroll-pop" id="J_ImScrollPop" style="max-height: 336px; height: 307px;">
+                    <div class="im-scroll-cont" style="transform: translate(0px, 0px) translateZ(0px);">
+                        <div class="im-order">
+                            <div class="pull-Up"><span class="pull-icon"></span><span class="pull-label"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+ </div>
+</div>
+<input type="hidden" value="{$shopId}" id="shopId">
+<input type="hidden" value="{$receiveId}" id="receiveId">
+<input type="hidden" value="{:session('WST_USER.userId')}" id="userId">
+<input type="hidden" value="{$shopName}" id="shopName">
+<input type="hidden" value="1" id="currPage">
+<input type="hidden" value="1" id="totalPage">
+<input type="hidden" value="0" id="currOrderPage">
+<input type="hidden" value="1" id="totalOrderPage">
+
+<img 
+    id="userPhoto"
+    style="display: none;"
+    src="__RESOURCE_PATH__/{:WSTConf('CONF.userLogo')}"
+    data-echo="{:WSTUserPhoto(session('WST_USER.userPhoto'))}" alt="" />
+
+<div class="g-toast-instance" id="J_GlobalToastInstance" style="display: none;"></div>
+<div class="shadow-pop" id="J_ShadowPop" style="display: none;">
+    <div class="shadow-layer"></div>
+    <div class="J_ShadowBox shadow-box">
+        <div class="new-win-tips">
+            <p class="new-p01">您已在其他页面发起咨询，当前咨询已失效!</p>
+            <p class="btn-box">
+                <a href="javascript:;" onclick="reload()"> 请点击这里重新咨询</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+  var goodsInfo;
+  var userId = "{:session('WST_USER.userId')}";
+  var loginName = "{$loginName}";
+  var server = "{$server}";
+  {if(isset($goods) && !empty($goods) )}
+    goodsInfo = {:json_encode($goods)};
+  {/if}
+</script>
+ </body>
+ </html>
+
+
+ 
+
